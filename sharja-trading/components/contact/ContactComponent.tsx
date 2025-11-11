@@ -1,13 +1,66 @@
-import React from 'react'
+"use client";
+import React, { useState } from "react";
+import axios from "axios";
+import { Toaster, toast } from "sonner";
 
-type Props = {}
+type Props = {};
 
 const ContactComponent = (props: Props) => {
+  // 1. State for form data, initializing with fields matching the form inputs
+  const [form, setForm] = useState({
+    name: "", // Maps to form_name
+    email: "", // Maps to form_email
+    subject: "", // New field based on the third input/message logic
+    message: "", // Maps to form_message (textarea)
+  });
+  const [loading, setLoading] = useState(false);
+
+  // 2. Handler for input changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    // Map the HTML form names to the state object keys
+    const stateName = name.replace("form_", "") as keyof typeof form;
+    setForm((prev) => ({ ...prev, [stateName]: value }));
+  };
+
+  // 3. Handler for form submission
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // API endpoint from the original ContactUsForm
+      const res = await axios.post("/api/send-email", {
+        name: form.name,
+        email: form.email,
+        // Concatenate subject and message, similar to how phone was concatenated before
+        message: `Subject: ${form.subject}\n\n${form.message}`,
+      });
+
+      if (res.status === 200) {
+        toast.success("Message sent successfully! We'll be in touch soon. 😊");
+        // Reset form on success
+        setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        toast.error("Something went wrong, please try again. 😔");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong, please try again. 😔");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
+      <Toaster position="top-right" richColors />
       <section className="contact-details pt-120 pb-120">
         <div className="container">
           <div className="row g-5">
+            {/* Address Block */}
             <div
               className="col-md-6 col-lg-4 wow fadeInLeft"
               data-wow-delay="00ms"
@@ -44,6 +97,7 @@ const ContactComponent = (props: Props) => {
                 </div>
               </div>
             </div>
+            {/* Phone Block (assuming phone field is now this one) */}
             <div
               className="col-md-6 col-lg-4 wow fadeInLeft"
               data-wow-delay="200ms"
@@ -73,11 +127,12 @@ const ContactComponent = (props: Props) => {
                       />
                     </svg>
                   </div>
-                  <h4 className="title">address line</h4>
+                  <h4 className="title">Phone Number</h4>
                   <p className="text">+251 942 43 9999</p>
                 </div>
               </div>
             </div>
+            {/* Email Block */}
             <div
               className="col-md-6 col-lg-4 wow fadeInLeft"
               data-wow-delay="400ms"
@@ -102,9 +157,8 @@ const ContactComponent = (props: Props) => {
                   <h4 className="title">Mail Adress</h4>
                   <p className="text">
                     <a
-                      href="https://html.kodesolution.com/cdn-cgi/l/email-protection"
+                      href="mailto:management@sharjatrading.com"
                       className="__cf_email__"
-                      data-cfemail="4b2e262a22270b2e332a263b272e65282426"
                     >
                       management@sharjatrading.com
                     </a>{" "}
@@ -157,12 +211,14 @@ const ContactComponent = (props: Props) => {
                       are marked *
                     </p>
                   </div>
+                  {/* Form is now connected to React state and submit handler */}
                   <form
+                    onSubmit={handleSubmit}
                     id="contact_form"
                     name="contact_form"
-                    action="https://html.kodesolution.com/2025/consultez-html-v2/includes/sendmail.php"
-                    method="post"
+                    // Removed old action/method
                   >
+                    {/* Name Field */}
                     <div className="type-feild">
                       <i className="fa-light fa-user"></i>
                       <input
@@ -170,8 +226,12 @@ const ContactComponent = (props: Props) => {
                         className="required"
                         type="text"
                         placeholder="Your Name*"
+                        value={form.name}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
+                    {/* Email Field */}
                     <div className="type-feild">
                       <i className="fa-light fa-envelope"></i>
                       <input
@@ -179,18 +239,44 @@ const ContactComponent = (props: Props) => {
                         className="required"
                         type="email"
                         placeholder="Email Address*"
+                        value={form.email}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
+                    {/* Subject Field (Mapping the third field to 'subject' for context) */}
+                    <div className="type-feild">
+                      <i className="fa-light fa-pen-to-square"></i>
+                      <input
+                        name="form_subject" // Added name and changed logic to use an input for subject
+                        className="required"
+                        type="text"
+                        placeholder="Subject*"
+                        value={form.subject}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    {/* Message Field (Textarea) */}
                     <div className="type-feild">
                       <i className="fa-light fa-pen-to-square"></i>
                       <textarea
                         name="form_message"
                         className="required"
-                        placeholder="Enter Your Messege here"
+                        placeholder="Enter Your Message here"
+                        value={form.message}
+                        onChange={handleChange}
+                        required
                       ></textarea>
                     </div>
-                    <button className="btn-two">
-                      <i className="fa-light fa-paper-plane"></i> Get In Touch
+                    {/* Submit Button */}
+                    <button
+                      className="btn-two"
+                      type="submit"
+                      disabled={loading}
+                    >
+                      <i className="fa-light fa-paper-plane"></i>{" "}
+                      {loading ? "Sending..." : "Send"}
                     </button>
                   </form>
                 </div>
@@ -201,6 +287,6 @@ const ContactComponent = (props: Props) => {
       </section>
     </div>
   );
-}
+};
 
-export default ContactComponent
+export default ContactComponent;

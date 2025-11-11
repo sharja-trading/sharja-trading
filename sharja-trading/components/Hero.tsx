@@ -13,7 +13,7 @@ const Hero = (props: Props) => {
               <h1 className="title wow splt-txt" data-splitting><span className="font-weight-400 d-block">Authorized Partner for</span> DELL IT Solutions</h1>
               <p className="text wow fadeInLeft" data-wow-delay="00ms" data-wow-duration="1500ms">Sharja Trading PLC is the trusted destination for IT solutions, delivering genuine Dell Computers and cutting-edge technology as one of the few authorized Dell partners in the country. </p>
               <div className="btn-wrp">
-                <a className="btn-one-rounded wow fadeInLeft" data-wow-delay="200ms" data-wow-duration="1500ms" href="page-about.html">Get started <i className="fa-regular fa-angle-right"></i></a>
+                <a className="btn-one-rounded wow fadeInLeft" data-wow-delay="200ms" data-wow-duration="1500ms" href="/contact">Get started <i className="fa-regular fa-angle-right"></i></a>
                 <a href="https://www.youtube.com/watch?v=Lplq8RjQ0zU" data-fancybox="gallery" data-caption="" className="video-btn wow fadeInLeft playbtnanim" data-wow-delay="400ms" data-wow-duration="1500ms"><i className="fa-sharp fa-solid fa-play"></i></a>
               </div>
             </div>
